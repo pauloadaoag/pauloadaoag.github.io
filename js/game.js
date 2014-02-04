@@ -50,8 +50,10 @@ Game.Play.prototype = {
 
     if (cursors.up.isDown)
     {
+
       //if (player.body.velocity.y >= 0) player.body.velocity.y = -300;
-       player.body.velocity.y = -200;
+      if (player.body.velocity.y >= 0 ) player.body.velocity.y = -200;
+      else player.body.velocity.y = player.body.velocity.y*1.05;
     }  
   },
   create: function(){

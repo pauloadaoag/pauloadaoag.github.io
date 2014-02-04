@@ -11,7 +11,7 @@ var scoreText;
 var hiScoreText;
 var hiScore = 0;
 var score = 0;
-var nextX = -200;
+var nextX = -800;
 var pylons = 0;
 Game.Play = function(game) { };
 Game.Play.prototype = {
@@ -58,7 +58,7 @@ Game.Play.prototype = {
     
     game.add.sprite(0, 0, 'sky');
     score = 0;
-    nextX = -200;
+    nextX = -800;
     pylons = 0;
     platforms = game.add.group();
     ground = platforms.create(0, game.world.height - 15, 'ground');

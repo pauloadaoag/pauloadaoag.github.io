@@ -1,0 +1,96 @@
+
+
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+
+#timeclock_viewport{
+	/*width: 100%;*/
+
+	overflow-x: hidden;
+
+	overflow-y: hidden;
+
+    white-space:nowrap;
+    
+    padding: 20px;
+/*    overflow-x: scroll;
+width: 800px;
+height: 200px;
+color: #fff;
+border: 1px solid #ccc;
+background-color: #ff6b24;*/
+}
+
+#timeclock{
+	position: relative;
+	
+	top: -1px;
+	left: -1px;
+	vertical-align: bottom;	
+	list-style: none;
+
+/*position: relative;
+cursor: move;
+top: 0px;
+left: 0px;*/
+}
+
+#timeclock:active{
+  cursor: move;
+}
+
+.timeclock{
+	position: absolute;
+	left: 0px
+	top: 0px;
+  font-size: 10px;
+	padding: 10px 5px;
+	width: 50px;
+	height: 30px;
+	list-style: none;
+	vertical-align: bottom;
+	
+	bottom: 0px;
+	display: block;
+/*	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 150px;
+	height: 150px;*/
+}
+
+
+.tooltip {
+  cursor: pointer;
+  z-index: 3;
+}
+
+.tSlider {
+  width: 900px;
+  height: 100px;
+  background-color: #fefefe;
+  position: relative;
+  overflow-x: scroll;
+}
+
+.slider{
+  width: 600px;
+  position: absolute;
+  bottom: 0px;
+  background-color: #f00;
+  height: 5px;
+}
+
+.tick{
+  padding: 2px;
+  height: 10px;
+  width: 1px;
+  position: absolute;
+  bottom: 0px;
+  border-left: 1px solid #000;
+}

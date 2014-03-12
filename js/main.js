@@ -74,108 +74,81 @@ $.fn.slider = function() {
     var slider = $('<div class="slider"></div></div>')
     var leftEdge = $(this).position().left;
     var topEdge = $(this).position().top;
+    var originalSliderWidth = 0;
+    var expandedSliderWidth = 0;
+
     console.log(leftEdge)
     var tooltip = {}
     tooltip.moving = false;
-    //tooltip.disableTextSelect()
-    // tooltip.on("mousedown", function(event){
-    //   console.log("tooltip clicked")
-    //   tooltip.moving = !tooltip.moving;
-    //   event.stopPropagation(); //Stop bubbling up to parent
-    // })
 
-    // tooltip.on("mouseup", function(event){
-    //   if (tooltip.moving) tooltip.moving = false;
-    // })
-    $('#movedown').click(function() {
-      console.log(movingToolTip)
-        movingToolTip.attr("snapPos", "bottom")
-        movingToolTip.css("bottom", bottom + "px")
-        // for (var i = 0; i < ticks.length; i++){
-        //   ticks[i].css("left", i * (100/12)+"%")
-        // }
-        // var posWithinParent = (event.pageX - leftEdge + (width/2))/2400;
-        // movingToolTip.css("left", ((posWithinParent*600)) + "px")
-        slider.css("width", "864px")
-        slider.css("left", "30px")
-    })
 
     var root = $(this)
-    $(this).on("mousemove", function(event) {
-        //console.log("x: %s - y: %s ", event.pageX, event.pageY)
+
+    root.on("mousemove", function(event) {
         if (movingToolTip !== null) {
             var snapPos = (movingToolTip.attr("snapPos"))
             var distanceToTop = (event.pageY - topEdge)
             var left = $(this).position().left;
             var width = (movingToolTip.width())
             var leftMargin = slider.position().left
-            var posWithinParent = (event.pageX - leftEdge + (width / 2) - leftMargin) / slider.width();
-            //var newLeft = (event.pageX - leftEdge - (width / 2) + leftMargin)
+            
             var newLeft = (event.pageX - leftEdge - (width / 2) - leftMargin)
             var oldLeft = movingToolTip.position().left;
-            movingToolTip.css('left', newLeft + "px")
+            if (Math.abs(newLeft - oldLeft) >= 4) movingToolTip.css('left', newLeft+4 + "px")
 
-            console.log("%s --> %s - leftMargin: %s posinparent:%s",oldLeft, newLeft, leftMargin, posWithinParent)
+            
+            var tooltipcenter = movingToolTip.position().left + (width/2);
+            var posWithinParent = tooltipcenter / slider.width();
+
             if (snapPos == "top") {
                 //slider.css("left",-(event.pageX - leftEdge)+"px")
             }
 
-            if ((snapPos == "bottom") && (distanceToTop < 30)) {
-                movingToolTip.css('bottom', "30px")
+            if ((snapPos == "bottom") && (distanceToTop > 70)) {
+                movingToolTip.css('bottom', "0px")
                 movingToolTip.attr("snapPos", "top")
-                // for (var i = 0; i < ticks.length; i++){
-                //   ticks[i].css("left", 2*i * (100/12)+"%")
-                // }
-                debugger;
-                slider.css("width", "6912px")
-                var oldLeftMargin = slider.position().left;
-                var pol = event.pageX - leftEdge - (posWithinParent * 6912) + width + oldLeftMargin;
-                //slider.css("left", -(posWithinParent*(2400) - event.pageX + leftEdge - oldLeftMargin)  +"px")
-                slider.css("left", pol + "px")
-                leftMargin = slider.position().left
-                newLeft = (event.pageX - leftEdge - (width / 2) - leftMargin)
-                movingToolTip.css('left', newLeft + "px")
-                //movingToolTip.css("left", posWithinParent*100 + "%")
-                //movingToolTip.css("left", posWithinParent*100 + "%")
-                // console.log(posWithinParent*100)
-                // console.log(slider.position())
-
+                slider.css("width", expandedSliderWidth + "px")
+                var newWidth = posWithinParent * expandedSliderWidth;
+                var newSliderLeft = (tooltipcenter  + leftMargin) - newWidth;
+                slider.css("left", newSliderLeft + "px")
+                movingToolTip.css("left", newWidth - (width/2) + "px")
             }
-            if ((snapPos == "top") && (distanceToTop > 70)) {
+            if ((snapPos == "top") && (distanceToTop < 30)) {
                 movingToolTip.attr("snapPos", "bottom")
                 movingToolTip.css("bottom", bottom + "px")
-                // for (var i = 0; i < ticks.length; i++){
-                //   ticks[i].css("left", i * (100/12)+"%")
-                // }
-                posWithinParent = (event.pageX - leftEdge + (width / 2)) / 6912;
-                movingToolTip.css("left", ((posWithinParent * 600)) + "px")
-                slider.css("width", "864px")
+                posWithinParent = tooltipcenter / slider.width();
+                movingToolTip.css("left", ((posWithinParent * expandedSliderWidth)) + "px")
+                slider.css("width", originalSliderWidth + "px")
                 slider.css("left", "30px")
             }
-
         }
         event.stopPropagation();
     })
 
+    //populate with ticks
     var ticks = [];
-
     for (var i = 0; i < 24; i++) {
         var toAppend = $("<div class='tick'></div>")
-        toAppend.text(i + 1)
+        toAppend.text(i )
         toAppend.css("left", i * (100 / 24) + "%");
         ticks.push(toAppend)
         slider.append(toAppend);
     }
 
-    var expand = function() {
+    
 
-    }
+    var addedAlready = false;
 
     $(this).append(slider)
+    originalSliderWidth = slider.width();
+    expandedSliderWidth = originalSliderWidth * 4;
+
     var initialXPos = 0;
     var movingToolTip = null
-    var bottom = slider.height();
+    var bottom = 30;
     $(this).on('mousedown', function(data) {
+        if (addedAlready) return;
+        addedAlready = true;
         var newToolTip = $(tooltipStr);
 
         toolTips.push(newToolTip)
@@ -191,7 +164,7 @@ $.fn.slider = function() {
         slider.append(newToolTip);
         //newToolTip.css("left", data.offsetX + "px")
         console.log(slider.width())
-        newToolTip.css("left", data.pageX - $(this).position().left - slider.position().left - (newToolTip.width() / 2) + "px")
+        newToolTip.css("left", 0 + "px")
     })
 
     $(this).on("mouseup", function(event) {

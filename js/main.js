@@ -1,57 +1,3 @@
-// app = angular.module('timeClock',[])
-
-
-// app.controller('timeClockCtrl', ['$scope', '$filter', function  ($scope, $filter) {
-
-//  $scope.timeTicks = [];
-//   var minsInDay = 60*24;
-//  for (var i = 0; i < minsInDay; i++){
-//    $scope.timeTicks.push(i);
-//  }
-
-//   $scope.spacing = 1;
-//   $scope.adjustSpacing = function  () {
-//     if ($scope.spacing == 10) $scope.spacing = 30;
-//     else $scope.spacing = 10;
-//     // body...
-//   }
-
-//   var minsToTime = function(mins){
-//     var minutes = (mins%60).toString();
-//     var hours = (Math.floor(mins/60)).toString();
-//     minutes = (minutes.length == 1)?("0"+minutes):(minutes)
-//     hours = (hours.length == 1)?("0"+hours):(hours)
-//     return (hours + ":" + minutes)
-//   }
-
-//   $scope.reportTime = function(){
-//     console.log(this);
-//     //console.log($filter('minsToTime', this.tick))
-//     $scope.timeSelected = (minsToTime(this.tick))
-//   }
-//  // body...
-// }])
-
-
-// app.filter('minsToTime', function  () {
-//   return function(mins){
-//     var minutes = (mins%60).toString();
-//     var hours = (Math.floor(mins/60)).toString();
-//     minutes = (minutes.length == 1)?("0"+minutes):(minutes)
-//     hours = (hours.length == 1)?("0"+hours):(hours)
-//     return (hours + ":" + minutes)
-//   }
-//   // body...
-// })
-
-
-// $(document).ready(function  () {
-//   $( "#timeclock" ).draggable({ axis: "x", grid: [ 17, 17 ] });  // body...
-//   $("#dragme").draggable({axis : "x"})
-//  console.log("ready")
-// })
-//  
-
 
 $.fn.slider = function(option, val) {
     return this.each(function() {
@@ -66,6 +12,15 @@ $.fn.slider = function(option, val) {
         }
     })
 };
+
+var pixToTime = function(pix){
+  var totalMins = pix/8;
+  var mm = (totalMins%60).toFixed(0);
+  var hh = (Math.floor(totalMins/60)).toFixed(0);
+  hh = (hh.length < 2)?("0"+hh):(hh)
+  mm = (mm.length < 2)?("0"+mm):(mm)
+  return (hh+":"+mm)
+}
 
 $.fn.slider = function() {
     var parent = $(this);
@@ -92,9 +47,20 @@ $.fn.slider = function() {
             var width = (movingToolTip.width())
             var leftMargin = slider.position().left
             
-            var newLeft = (event.pageX - leftEdge - (width / 2) - leftMargin)
-            var oldLeft = movingToolTip.position().left;
-            if (Math.abs(newLeft - oldLeft) >= 4) movingToolTip.css('left', newLeft+4 + "px")
+            if (snapPos == "top"){
+              var oldLeft = movingToolTip.position().left;
+              var newLeft = (event.pageX - leftEdge - (width / 2) - leftMargin)
+              if (newLeft > oldLeft){ newLeft = newLeft - newLeft%8; movingToolTip.css('left', (newLeft - (width/2)) + "px")  }
+              else { newLeft = newLeft + (8 - newLeft%8); movingToolTip.css('left', (newLeft + (width/2)) + "px")  }
+              $("#mylabel").text(pixToTime(newLeft))
+            }
+            
+            else{
+              var newLeft = (event.pageX - leftEdge - (width / 2) - leftMargin)
+              var oldLeft = movingToolTip.position().left;
+              if (Math.abs(newLeft - oldLeft) >= 4) movingToolTip.css('left', newLeft+4 + "px")  
+            }
+            
 
             
             var tooltipcenter = movingToolTip.position().left + (width/2);
@@ -103,24 +69,28 @@ $.fn.slider = function() {
             if (snapPos == "top") {
                 //slider.css("left",-(event.pageX - leftEdge)+"px")
             }
-
-            if ((snapPos == "bottom") && (distanceToTop > 70)) {
-                movingToolTip.css('bottom', "0px")
+            console.log(distanceToTop)
+            if ((snapPos == "bottom") && (distanceToTop > 80)) {
+                movingToolTip.css('bottom', "10px")
                 movingToolTip.attr("snapPos", "top")
                 slider.css("width", expandedSliderWidth + "px")
                 var newWidth = posWithinParent * expandedSliderWidth;
                 var newSliderLeft = (tooltipcenter  + leftMargin) - newWidth;
                 slider.css("left", newSliderLeft + "px")
                 movingToolTip.css("left", newWidth - (width/2) + "px")
+                $(".minortick").show()
             }
-            if ((snapPos == "top") && (distanceToTop < 30)) {
+            if ((snapPos == "top") && (distanceToTop < 50)) {
                 movingToolTip.attr("snapPos", "bottom")
                 movingToolTip.css("bottom", bottom + "px")
                 posWithinParent = tooltipcenter / slider.width();
                 movingToolTip.css("left", ((posWithinParent * expandedSliderWidth)) + "px")
                 slider.css("width", originalSliderWidth + "px")
                 slider.css("left", "30px")
+                $(".minortick").hide()
+                
             }
+            
         }
         event.stopPropagation();
     })
@@ -129,11 +99,18 @@ $.fn.slider = function() {
     var ticks = [];
     for (var i = 0; i < 24; i++) {
         var toAppend = $("<div class='tick'></div>")
-        toAppend.text(i )
-        toAppend.css("left", i * (100 / 24) + "%");
+        toAppend.text(i)
+        toAppend.css("left", i * (100/24) + "%");
+        for (var j = 1; j < 4; j++){
+          var t = $("<div class='minortick'></div>")
+          t.css("left", j * 25 + "%")
+
+          toAppend.append(t);
+        }
         ticks.push(toAppend)
         slider.append(toAppend);
     }
+
 
     
 
@@ -141,7 +118,7 @@ $.fn.slider = function() {
 
     $(this).append(slider)
     originalSliderWidth = slider.width();
-    expandedSliderWidth = originalSliderWidth * 4;
+    expandedSliderWidth = originalSliderWidth * 10;
 
     var initialXPos = 0;
     var movingToolTip = null
@@ -183,3 +160,4 @@ $.fn.slider = function() {
 
 $('.tSlider').slider();
 $('.tSlider').disableTextSelect();
+$('.jumbotron').disableTextSelect();

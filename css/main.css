@@ -75,16 +75,16 @@ left: 0px;*/
   height: 100px;
   background-color: #fefefe;
   position: relative;
-  overflow-x: scroll;
+  overflow-x: hidden;
 }
 
 .slider{
-  width: 1152px;
+  width: 576px;
   position: absolute;
   bottom: 0px;
   background-color: #f00;
   height: 5px;
-  left: 0px;
+  left: 30px;
 }
 
 .tick{
@@ -92,11 +92,11 @@ left: 0px;*/
   
   width: 4.16%;
   color: #000;
-  
-  font-size: 8px;
+  vertical-align: bottom;
+  font-size: 12px;
   position: absolute;
   bottom: 0px;
-  height: 30px;
+  height: 40px;
   border-left: 1px solid #000;
 }
 

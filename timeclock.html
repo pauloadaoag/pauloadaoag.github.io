@@ -43,54 +43,16 @@
       <div class="container">
         <h1 > Timeclock</h1>
         <div class="tSlider"></div>
-        <ol>
-          <li>Click on slider</li>
-          <li>Drag left or right</li>
-          <li><button id="movedown">down</li>
-        </ol>
       </div>
     </div>
-
-<!--     <div class="jumbotron">
-      <div class="container">
-      <h1 > TImeclock</h1>
-      <a ng-click="adjustSpacing()" class="btn btn-default">Toggle Spacing</a>
-      <p>{{timeSelected}}</p>
-        <div id="timeclock_viewport">
-          <a class="btn btn-default" id="dragme">paulo</a>
-        	<div id="timeclock">
-
-        		<div class="timeclock" ng-repeat="tick in timeTicks" style="left:{{spacing*$index}}px;" ng-click="reportTime()">
-              <div style="display:block;width:100%; text-align:center;">
-                <span ng-show="(spacing == 30)||($index % 15 == 0)">|</span>
-              </div>
-              <div style="display:block;width:100%; text-align:center;">    
-                <span ng-show="(spacing == 30)||($index % 60 == 0)"> {{tick | minsToTime}}</span>
-              </div>
-            </div>
-        	</div>
-        </div>
-      </div>
-    </div> -->
-
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-
-      </div>
-
-      <hr>
-
-      <footer>
-        <p>&copy; Company 2013</p>
-      </footer>
-    </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 		<script src="js/vendor/jquery-ui-1.10.4.custom.js"></script>
 
         <script src="js/vendor/bootstrap.min.js"></script>
         <script src="js/vendor/angular.js"></script>
         <script src="js/disableSelect.js"></script>
+        <script src="js/clock.js"></script>
         <script src="js/main.js"></script>
 
         <script>

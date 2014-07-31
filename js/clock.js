@@ -16,6 +16,7 @@ $.fn.slider = function(option, val) {
 
 
 $.fn.slider = function() {
+  var timer;
   var parent = $(this);
   var tooltipStr = ('<div class="tooltip top in" style="bottom: 0px; left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner" id="mylabel">drag</div></div>');
   var toolTips = [];
@@ -50,13 +51,57 @@ $.fn.slider = function() {
   tooltip.moving = false;
   var prevYPos = -1;
   var cumDiff = 0;
-  var root = $(this)
+  var root = $(this);
+
+  var timerCB = function(){
+    alert("timed out!");
+  }
+
+  root.on("mouseup", function(){
+    if (timer) clearTimeout(timer);
+    if (movingToolTip) {
+        var tooltipcenter = movingToolTip.position().left + (movingToolTip.width() / 2);
+
+        $('.tooltip').show();
+        movingToolTip.attr("snapPos", "top")
+        movingToolTip.css("bottom", bottom + "px")
+        posWithinParent = tooltipcenter / slider.width();
+        if (posWithinParent < 0) posWithinParent = 0;
+        if (posWithinParent > 1) posWithinParent = 1;
+        movingToolTip.css("left", ((posWithinParent * originalSliderWidth) - (movingToolTip.width() / 2)) + "px")
+        slider.css("width", originalSliderWidth + "px");
+        slider.css("left", "30px");
+        $(".minortick").hide()
+        $('.tick').css("font-size","8px")
+        movingToolTip = null;
+    }
+  })
 
   root.on("mousemove", function(event) {
+    
     var ydiff = event.pageY - prevYPos;
     cumDiff += ydiff;
     prevYPos = event.pageY;
     if (movingToolTip !== null) {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function(){
+
+          if ((snapPos == "top")){
+            $('.tooltip').hide();
+            movingToolTip.show();
+            movingToolTip.css('bottom', "10px")
+            movingToolTip.attr("snapPos", "bottom")
+            slider.css("width", expandedSliderWidth + "px")
+            var newWidth = posWithinParent * expandedSliderWidth;
+            var newSliderLeft = (tooltipcenter + leftMargin) - newWidth;
+            slider.css("left", newSliderLeft + "px")
+            movingToolTip.css("left", newWidth - (width / 2) + "px")
+            $(".minortick").show()
+            $('.tick').css("font-size","12px");
+          }
+        }, 2000);
+
+
       var snapPos = (movingToolTip.attr("snapPos"));
       var width = (movingToolTip.width());
       var leftMargin = slider.position().left;

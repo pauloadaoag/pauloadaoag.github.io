@@ -89,7 +89,7 @@ $.fn.slider = function() {
           if ((snapPos == "top")){
             $('.tooltip').hide();
             movingToolTip.show();
-            movingToolTip.css('bottom', "10px")
+            // movingToolTip.css('bottom', "10px")
             movingToolTip.attr("snapPos", "bottom")
             slider.css("width", expandedSliderWidth + "px")
             var newWidth = posWithinParent * expandedSliderWidth;
@@ -99,7 +99,7 @@ $.fn.slider = function() {
             $(".minortick").show()
             $('.tick').css("font-size","12px");
           }
-        }, 2000);
+        }, 1000);
 
 
       var snapPos = (movingToolTip.attr("snapPos"));
@@ -160,36 +160,6 @@ $.fn.slider = function() {
 
       var tooltipcenter = movingToolTip.position().left + (width / 2);
       var posWithinParent = tooltipcenter / slider.width();
-
-      //Move down
-      if ((snapPos == "top") && (cumDiff > 30)) {
-        $('.tooltip').hide();
-        movingToolTip.show();
-        movingToolTip.css('bottom', "10px")
-        movingToolTip.attr("snapPos", "bottom")
-        slider.css("width", expandedSliderWidth + "px")
-        var newWidth = posWithinParent * expandedSliderWidth;
-        var newSliderLeft = (tooltipcenter + leftMargin) - newWidth;
-        slider.css("left", newSliderLeft + "px")
-        movingToolTip.css("left", newWidth - (width / 2) + "px")
-        $(".minortick").show()
-        $('.tick').css("font-size","12px")
-      }
-      //Move Up
-      if ((snapPos == "bottom") && (cumDiff < -30)) {
-        $('.tooltip').show();
-        movingToolTip.attr("snapPos", "top")
-        movingToolTip.css("bottom", bottom + "px")
-        posWithinParent = tooltipcenter / slider.width();
-        if (posWithinParent < 0) posWithinParent = 0;
-        if (posWithinParent > 1) posWithinParent = 1;
-        movingToolTip.css("left", ((posWithinParent * originalSliderWidth) - (width / 2)) + "px")
-        slider.css("width", originalSliderWidth + "px");
-        slider.css("left", "30px");
-        $(".minortick").hide()
-        $('.tick').css("font-size","8px")
-        movingToolTip = null;
-      }
 
     }
     event.stopPropagation();

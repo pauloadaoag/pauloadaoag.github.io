@@ -187,8 +187,8 @@ $.fn.slider = function() {
   toAppend.css("left","100%");
   slider.append(toAppend);
 
-  $('.tick').disableTextSelect();
-  $('.minortick').disableTextSelect();
+  // $('.tick').disableTextSelect();
+  // $('.minortick').disableTextSelect();
 
   var timeInButton = $("<a class='btn btn-primary'>Time In</a>");
   var timeOutButton = $("<a class='btn btn-warning'>Time Out</a>");
@@ -226,9 +226,10 @@ $.fn.slider = function() {
   var movingToolTip = null
   var bottom = 50;
   var markers = [];
+  var newToolTip = null;
   $(this).on('mousedown', function(data) {
-    if (!((setTimeIn)||(setTimeOut))) return;         
-    var newToolTip = $(tooltipStr);
+    if (!((setTimeIn)||(setTimeOut))) return;     
+    newToolTip = $(tooltipStr);
     if (setTimeIn) {
       newToolTip.append(timeInField)
       newToolTip.children("#mylabel").text("Time In:")
@@ -249,7 +250,6 @@ $.fn.slider = function() {
 
     newToolTip.css("bottom", bottom + "px")
     newToolTip.attr("snapPos", "top")
-    newToolTip.disableTextSelect();
     newToolTip.on("mousedown", function(event) {
       movingToolTip = $(this)
       prevYPos = event.pageY;
@@ -272,7 +272,6 @@ $.fn.slider = function() {
     movingToolTip = null;
     event.stopPropagation(); 
   })
-  root.disableTextSelect();
 
   return{
     getTime : function(){

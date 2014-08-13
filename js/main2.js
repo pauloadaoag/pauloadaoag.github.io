@@ -9,14 +9,24 @@
   canvas.setWidth(CANVAS_WIDTH);
   var zoomStatus = 'out';
 
+  var getElemById = function(id){
+    var tF = canvas._objects.filter(function(c){return c.id == id});
+    return tF;
+  }
+
   var zoomInTimeLine = function(){
+    if (zoomStatus == 'in') return;
     zoomStatus = 'in';
     var tF = getElemById('majorticks');
     var bias = tF[0].width / 2;
       tF[0]._objects.map(function(o,idx){
-        if (o.id = "bar") return;
-        var spacing = timeline.width/12 * 4;
-        o.left = idx*spacing  - bias;
+        if (o.id != "bar")  {
+          var spacing = timeline.width/12 * 4;
+          o.left = idx*spacing  - bias;
+        } else {
+          o.width = o.width * 4;
+        }
+        
       });
       tF[0].left = 0;
     var tF = getElemById('majorticklabels');
@@ -27,17 +37,20 @@
       });
       tF[0].left = 0;
     canvas.renderAll();
-
   }
 
   var zoomOutTimeLine = function(){
+    if (zoomStatus == 'out') return;
     zoomStatus = 'out';
     var tF = getElemById('majorticks');
     var bias = tF[0].width / 2;
     tF[0]._objects.map(function(o,idx){
-      if (o.id = "bar") return;
-      var spacing = timeline.width/12;
-      o.left = idx*spacing  - bias;
+      if (o.id != "bar") {
+        var spacing = timeline.width/12;
+        o.left = idx*spacing  - bias;
+      } else {
+        o.width = o.width/4;
+      }
     });
     tF[0].left = 0;
     var tF = getElemById('majorticklabels');
@@ -49,6 +62,117 @@
     tF[0].left = 0;
     canvas.renderAll();
   }
+
+  var perCentToTime = function(pct) {
+    var totalMins = pct * (24 * 60);
+    totalMins = Math.floor(totalMins);
+    var mm = (totalMins % 60).toFixed(0);
+    var hh = (Math.floor(totalMins / 60)).toFixed(0);
+    hh = (hh.length < 2) ? ("0" + hh) : (hh)
+    mm = (mm.length < 2) ? ("0" + mm) : (mm)
+    return (hh + ":" + mm)
+  }
+
+
+  var Tick = fabric.util.createClass(fabric.Rect, {
+    type: 'tick',
+    initialize: function(options) {
+      options || (options = { });
+      options.hasControls = false;
+      options.hasBorders = false;
+      this.origTop = options.top;
+      this.leftLimit = options.timeline.left - options.width/2
+      this.left = this.leftLimit;
+      this.timelie = options.timeline;
+      this.rightLimit = options.timeline.left + options.timeline.width -  options.width/2;
+      this.tipHeight = options.tipHeight;
+      options.hasRotatingPoint = false;
+      this.callSuper('initialize', options);
+      this.set('label', options.label || '');
+      
+      this.on('moving', function(){
+        this.top = this.origTop;
+        if (this.left <= this.leftLimit ) this.left = this.leftLimit;
+        if (this.left >= this.rightLimit) this.left = this.rightLimit;
+      })
+    },
+
+
+    toObject: function() {
+      return fabric.util.object.extend(this.callSuper('toObject'), {
+        label: this.get('label')
+      });
+    },
+
+
+    _render: function(ctx) {
+      this.callSuper('_render', ctx);
+      ctx.moveTo(0,0)
+      ctx.beginPath();
+      ctx.moveTo(-10,this.height/2);
+      ctx.lineTo(10,(this.height/2));
+      ctx.lineTo(0,(this.height/2)+this.tipHeight);
+      ctx.fill();
+      ctx.font = '10px Helvetica';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      var pct = this.left / this.timeline.width;
+      ctx.fillText(this.label +":" +perCentToTime(pct), 0,2);
+    }
+  });
+
+  var TimeLine = fabric.util.createClass(fabric.Object, {
+    type: 'TimeLine',
+    initialize  : function(options) {
+
+      options.hasControls = false;
+      options.hasBorders = false;
+      options.hasRotatingPoint = false;
+      options.selectable = false;
+      this.callSuper('initialize', options);  
+
+    },
+    _render: function(ctx){
+      ctx.strokeStyle="#FF0000";
+      ctx.beginPath();
+      ctx.moveTo(-this.width/2, this.height/2);
+      ctx.lineTo(this.width/2, this.height/2)
+      ctx.stroke();
+    }
+  });
+  var timeline = new TimeLine({
+    width: CANVAS_WIDTH - 100,
+    height: 20,
+    left: 30,
+    top: 20,
+    label: 'Left',
+    fill: '#222',
+  });
+  canvas.add(timeline);
+
+  var zoomInButton = new Tick({
+    width: 60,
+    height: 20,
+    timeline: timeline,
+    top: 10,
+
+    tipHeight: 10,
+    label: 'Left',
+    fill: '#222',
+  });
+    var zoomOutButton = new Tick({
+    width: 60,
+    height: 20,
+    timeline: timeline,
+    tipHeight: 10,
+    top: 10,
+    label: 'Left',
+    fill: '#222',
+  });
+  canvas.add(zoomInButton);
+  canvas.add(zoomOutButton)
+
+
 
   var zoomout = new fabric.Circle({
       left: 100,
@@ -58,7 +182,7 @@
       hasBorders: false,
       hasControls: false,
       hasRotatingPoint: false,
-      lockMovementY:true
+      lock2mentY:true
     });
   zoomout.on('mousedown', zoomOutTimeLine)
 
@@ -76,11 +200,6 @@
 
   canvas.add(zoomin)
   canvas.add(zoomout)
-
-  var getElemById = function(id){
-    var tF = canvas._objects.filter(function(c){return c.id == id});
-    return tF;
-  }
 
   var markerFactory = function(color, x, y){
     var marker = new fabric.Circle({

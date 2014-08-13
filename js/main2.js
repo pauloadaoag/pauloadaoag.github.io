@@ -14,6 +14,7 @@
     var tF = getElemById('majorticks');
     var bias = tF[0].width / 2;
       tF[0]._objects.map(function(o,idx){
+        if (o.id = "bar") return;
         var spacing = timeline.width/12 * 4;
         o.left = idx*spacing  - bias;
       });
@@ -29,21 +30,12 @@
 
   }
 
-  var clicky = new fabric.Circle({
-      left: 100,
-      top: 10,
-      fill: 'red',
-      radius: 10,
-      hasBorders: false,
-      hasControls: false,
-      hasRotatingPoint: false,
-      lockMovementY:true
-    });
-  
-  clicky.on('mousedown', function(){
+  var zoomOutTimeLine = function(){
+    zoomStatus = 'out';
     var tF = getElemById('majorticks');
     var bias = tF[0].width / 2;
     tF[0]._objects.map(function(o,idx){
+      if (o.id = "bar") return;
       var spacing = timeline.width/12;
       o.left = idx*spacing  - bias;
     });
@@ -55,9 +47,20 @@
       o.left = idx*spacing  - bias;
     });
     tF[0].left = 0;
-
     canvas.renderAll();
-  })
+  }
+
+  var zoomout = new fabric.Circle({
+      left: 100,
+      top: 10,
+      fill: 'red',
+      radius: 10,
+      hasBorders: false,
+      hasControls: false,
+      hasRotatingPoint: false,
+      lockMovementY:true
+    });
+  zoomout.on('mousedown', zoomOutTimeLine)
 
   var zoomin = new fabric.Circle({
       left: 120,
@@ -72,8 +75,7 @@
   zoomin.on('mousedown', zoomInTimeLine);
 
   canvas.add(zoomin)
-
-  canvas.add(clicky)
+  canvas.add(zoomout)
 
   var getElemById = function(id){
     var tF = canvas._objects.filter(function(c){return c.id == id});

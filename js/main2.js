@@ -4,7 +4,7 @@
   var CANVAS_WIDTH = 800;
   var MARGIN = 50;
   var TIMELINE_WIDTH = CANVAS_WIDTH - (2 * MARGIN);
-
+  fabric.isTouchSupported = true;
   canvas.setHeight(CANVAS_HEIGHT);
   canvas.setWidth(CANVAS_WIDTH);
   var zoomStatus = 'out';
@@ -80,16 +80,20 @@
       options || (options = { });
       options.hasControls = false;
       options.hasBorders = false;
+      this.selectable = true;
       this.origTop = options.top;
       this.leftLimit = options.timeline.left - options.width/2
       this.left = this.leftLimit;
+      if (options.left) this.left = options.left;
       this.timelie = options.timeline;
       this.rightLimit = options.timeline.left + options.timeline.width -  options.width/2;
       this.tipHeight = options.tipHeight;
       options.hasRotatingPoint = false;
       this.callSuper('initialize', options);
       this.set('label', options.label || '');
-      
+      this.on('mousedown', function(){
+        console.log("asd")
+      })
       this.on('moving', function(){
         this.top = this.origTop;
         if (this.left <= this.leftLimit ) this.left = this.leftLimit;
@@ -115,6 +119,7 @@
       ctx.fill();
       ctx.font = '10px Helvetica';
       ctx.fillStyle = '#fff';
+      ctx.fillRect(0,0,1,1)
       ctx.textAlign = 'center';
       var pct = this.left / this.timeline.width;
       ctx.fillText(this.label +":" +perCentToTime(pct), 0,2);
@@ -124,12 +129,30 @@
   var TimeLine = fabric.util.createClass(fabric.Object, {
     type: 'TimeLine',
     initialize  : function(options) {
-
+      var that = this;
       options.hasControls = false;
       options.hasBorders = false;
       options.hasRotatingPoint = false;
       options.selectable = false;
       this.callSuper('initialize', options);  
+      this.on("mousedown", function(e){
+
+        console.log(e.e.offsetX);
+        console.log(e);
+        h = 40;
+        t = that.top - h/2;
+        var t = new Tick({
+          width: 60,
+          height: h,
+          timeline: this,
+          left : (e.e.offsetX  - that.left),
+          top: t - 10,
+          tipHeight: 10,
+          label: 'Left',
+          fill: '#222',
+        });
+        canvas.add(t);
+      })
 
     },
     _render: function(ctx){
@@ -138,6 +161,14 @@
       ctx.moveTo(-this.width/2, this.height/2);
       ctx.lineTo(this.width/2, this.height/2)
       ctx.stroke();
+
+      for (var i = 0; i <= 12; i++){
+        ctx.beginPath();
+        x = -this.width/2 + (this.width/12)*i;
+        ctx.moveTo(x, this.height/2);
+        ctx.lineTo(x, this.height/2 - 20);
+        ctx.stroke();
+      }
     }
   });
   var timeline = new TimeLine({
@@ -150,27 +181,27 @@
   });
   canvas.add(timeline);
 
-  var zoomInButton = new Tick({
-    width: 60,
-    height: 20,
-    timeline: timeline,
-    top: 10,
+  // var zoomInButton = new Tick({
+  //   width: 60,
+  //   height: 20,
+  //   timeline: timeline,
+  //   top: 10,
 
-    tipHeight: 10,
-    label: 'Left',
-    fill: '#222',
-  });
-    var zoomOutButton = new Tick({
-    width: 60,
-    height: 20,
-    timeline: timeline,
-    tipHeight: 10,
-    top: 10,
-    label: 'Left',
-    fill: '#222',
-  });
-  canvas.add(zoomInButton);
-  canvas.add(zoomOutButton)
+  //   tipHeight: 10,
+  //   label: 'Left',
+  //   fill: '#222',
+  // });
+  //   var zoomOutButton = new Tick({
+  //   width: 60,
+  //   height: 20,
+  //   timeline: timeline,
+  //   tipHeight: 10,
+  //   top: 10,
+  //   label: 'Left',
+  //   fill: '#222',
+  // });
+  // canvas.add(zoomInButton);
+  // canvas.add(zoomOutButton)
 
 
 

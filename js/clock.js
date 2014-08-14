@@ -94,6 +94,7 @@ $.fn.slider = function() {
             slider.css("width", expandedSliderWidth + "px")
             var newWidth = posWithinParent * expandedSliderWidth;
             var newSliderLeft = (tooltipcenter + leftMargin) - newWidth;
+            console.log(newSliderLeft)
             slider.css("left", newSliderLeft + "px")
             movingToolTip.css("left", newWidth - (width / 2) + "px")
             $(".minortick").show()
